@@ -8,6 +8,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>26</maven.compiler.release>
-        <exec.mainClass>kelompok_5.spp_gui.SPP_GUI</exec.mainClass>
+        <exec.mainClass>model.SPP_GUI</exec.mainClass>
     </properties>
 </project>
