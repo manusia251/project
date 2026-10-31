@@ -191,13 +191,13 @@ public class DataSiswa extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "NO", "NIS", "NAMA SISWA", "TAGIHAN / BULAN", "STATUS TAHUN AJARAN"
+                "NO", "NIS", "NAMA SISWA", "KELAS", "TAGIHAN / BULAN", "STATUS TAHUN AJARAN"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
