@@ -1,9 +1,9 @@
 package controller;
 
-public class Logs extends javax.swing.JFrame {
+public class Tagihan extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Logs.class.getName());
-    public Logs() {
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Tagihan.class.getName());
+    public Tagihan() {
         initComponents();
     }
 
@@ -39,7 +39,7 @@ public class Logs extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        java.awt.EventQueue.invokeLater(() -> new Logs().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Tagihan().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

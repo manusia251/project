@@ -1,9 +1,9 @@
 package controller;
 
-public class admin_controller extends javax.swing.JFrame {
+public class Dashboard extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(admin_controller.class.getName());
-    public admin_controller() {
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Dashboard.class.getName());
+    public Dashboard() {
         initComponents();
     }
     @SuppressWarnings("unchecked")
@@ -292,7 +292,7 @@ public class admin_controller extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        java.awt.EventQueue.invokeLater(() -> new admin_controller().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Dashboard().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

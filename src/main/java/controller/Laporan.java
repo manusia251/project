@@ -1,8 +1,8 @@
 package controller;
-public class mdifikasi_mahasiswa extends javax.swing.JFrame {
+public class Laporan extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(mdifikasi_mahasiswa.class.getName());
-    public mdifikasi_mahasiswa() {
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Laporan.class.getName());
+    public Laporan() {
         initComponents();
     }
     @SuppressWarnings("unchecked")
@@ -36,7 +36,7 @@ public class mdifikasi_mahasiswa extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        java.awt.EventQueue.invokeLater(() -> new mdifikasi_mahasiswa().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Laporan().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

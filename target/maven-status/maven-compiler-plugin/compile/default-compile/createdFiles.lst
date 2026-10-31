@@ -1,7 +1,6 @@
-controller\Logs.class
-controller\mdifikasi_mahasiswa.class
-controller\Pembayaran.class
-controller\list_mahasiswa.class
+controller\Tagihan.class
+controller\Dashboard.class
+controller\Laporan.class
+controller\Data_siswa.class
+controller\Riwayat.class
 controller\LoginAdmin.class
-controller\Users.class
-controller\admin_controller.class

@@ -1,8 +1,8 @@
 package controller;
-public class Pembayaran extends javax.swing.JFrame {
+public class Riwayat extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Pembayaran.class.getName());
-    public Pembayaran() {
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Riwayat.class.getName());
+    public Riwayat() {
         initComponents();
     }
 
@@ -119,7 +119,7 @@ public class Pembayaran extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        java.awt.EventQueue.invokeLater(() -> new Pembayaran().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Riwayat().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
