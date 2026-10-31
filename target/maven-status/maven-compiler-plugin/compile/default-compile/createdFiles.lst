@@ -1,6 +1,5 @@
+controller\DataSiswa.class
 controller\Tagihan.class
 controller\Dashboard.class
 controller\Laporan.class
-controller\Data_siswa.class
 controller\Riwayat.class
-controller\LoginAdmin.class
