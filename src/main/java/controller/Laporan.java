@@ -142,7 +142,7 @@ public class Laporan extends javax.swing.JFrame {
                 .addComponent(jButton1))
         );
 
-        jPanel3.setBackground(new java.awt.Color(204, 204, 0));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI Historic", 0, 10)); // NOI18N
         jLabel9.setText("TOTAL SISWA");
