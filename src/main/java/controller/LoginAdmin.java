@@ -1,10 +1,21 @@
 package controller;
+//import class yang telah di buat dan memanggil library lain
+import dao.Database;
+import dao.UserDao;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 public class LoginAdmin extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginAdmin.class.getName());
     public LoginAdmin() {
         initComponents();
+        jToggleButton1.addActionListener(evt -> login());
+        try {
+            Database.initialize();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal membuka database: " + e.getMessage());
+        }
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -29,6 +40,8 @@ public class LoginAdmin extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Password: ");
+
+        input_username.addActionListener(this::input_usernameActionPerformed);
 
         jToggleButton1.setText("MASUK");
 
@@ -115,8 +128,30 @@ public class LoginAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_tampilkan_passwordActionPerformed
 
     private void input_PasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_PasswordActionPerformed
-        // TODO add your handling code here:
+        login();
     }//GEN-LAST:event_input_PasswordActionPerformed
+
+    private void input_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_usernameActionPerformed
+        input_Password.requestFocus();
+    }//GEN-LAST:event_input_usernameActionPerformed
+
+    //buat method untuk mengecek apakah user untuk login ke aplikasi
+    private void login() {
+        try {
+            boolean berhasil = new UserDao().login(
+                    input_username.getText(),
+                    new String(input_Password.getPassword()));
+
+            if (berhasil) {
+                new Dashboard().setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Username atau password salah.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal login: " + e.getMessage());
+        }
+    }
 
     public static void main(String args[]) {
         try {

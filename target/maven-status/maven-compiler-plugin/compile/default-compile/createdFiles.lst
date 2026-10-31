@@ -2,4 +2,7 @@ controller\DataSiswa.class
 controller\Tagihan.class
 controller\Dashboard.class
 controller\Laporan.class
+controller\LoginAdmin.class
+dao\Database.class
+dao\UserDao.class
 controller\Riwayat.class
