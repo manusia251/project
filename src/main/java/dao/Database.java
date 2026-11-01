@@ -10,16 +10,14 @@ import java.io.IOException;
 
 public class Database {
     //ini untuk menentukan lokasi dari data basenya nanti
-    private static final Path DB_PATH =
-            
-            Path.of("data", "spp.db").toAbsolutePath();
+    private static final Path DB_PATH = Path.of("data", "spp.db").toAbsolutePath();
 
     private static final String URL =
             "jdbc:sqlite:" + DB_PATH;
 
     // Membuat koneksi ke database
     public static Connection getConnection() throws SQLException {
-        // coba buat file database
+        // coba buat file database kalau nggak ada db
         try {
             Files.createDirectories(DB_PATH.getParent());
             // kalau gagal keluarkan ini
@@ -45,12 +43,6 @@ public class Database {
              Statement stmt = conn.createStatement()) {
 
             stmt.execute(sql);
-
-            // Akun demo untuk pengujian
-            stmt.executeUpdate("""
-                INSERT OR IGNORE INTO users(username, password)
-                VALUES ('admin', 'admin123')
-            """);
         }
     }
 }

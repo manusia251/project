@@ -3,9 +3,8 @@ package controller;
 import dao.Database;
 import dao.UserDao;
 import java.sql.SQLException;
-import java.awt.Color;
-import javax.swing.Timer;
 import javax.swing.JOptionPane;
+import com.formdev.flatlaf.FlatLightLaf;
 
 public class LoginAdmin extends javax.swing.JFrame {
     
@@ -156,15 +155,14 @@ public class LoginAdmin extends javax.swing.JFrame {
 
     public static void main(String args[]) {
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            // FlatLaf dipasang sebelum JFrame dibuat agar seluruh komponen
+            // login dan halaman berikutnya menggunakan tema yang sama.
+            FlatLightLaf.setup();
+        } catch (Exception ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
+
+        // GUI Swing harus dibuat di Event Dispatch Thread.
         java.awt.EventQueue.invokeLater(() -> new LoginAdmin().setVisible(true));
     }
 
