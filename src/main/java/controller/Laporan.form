@@ -54,11 +54,11 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jToggleButton4" alignment="1" max="32767" attributes="0"/>
-                      <Component id="jToggleButton3" alignment="1" max="32767" attributes="0"/>
-                      <Component id="Tunggakan" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jToggleButton1" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jToggleButton5" alignment="0" max="32767" attributes="0"/>
+                      <Component id="dashboard_variable" alignment="1" max="32767" attributes="0"/>
+                      <Component id="data_variable" alignment="1" max="32767" attributes="0"/>
+                      <Component id="tagihan_variable" alignment="0" max="32767" attributes="0"/>
+                      <Component id="riwayat_variable" alignment="0" max="32767" attributes="0"/>
+                      <Component id="laporan_variable" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
@@ -109,15 +109,15 @@
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel4" min="-2" pref="16" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="jToggleButton4" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="dashboard_variable" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jToggleButton3" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="data_variable" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="Tunggakan" min="-2" pref="32" max="-2" attributes="0"/>
+                  <Component id="tagihan_variable" min="-2" pref="32" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jToggleButton1" pref="41" max="32767" attributes="0"/>
+                  <Component id="riwayat_variable" pref="41" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jToggleButton5" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="laporan_variable" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="149" max="-2" attributes="0"/>
                   <Component id="jLabel19" min="-2" pref="26" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
@@ -129,36 +129,45 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JToggleButton" name="jToggleButton1">
+        <Component class="javax.swing.JToggleButton" name="riwayat_variable">
           <Properties>
             <Property name="text" type="java.lang.String" value="Riwayat"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="riwayat_variableActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="Tunggakan">
+        <Component class="javax.swing.JToggleButton" name="tagihan_variable">
           <Properties>
             <Property name="text" type="java.lang.String" value="Tagihan"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tagihan_variableActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="jToggleButton3">
+        <Component class="javax.swing.JToggleButton" name="data_variable">
           <Properties>
             <Property name="text" type="java.lang.String" value="Data Siswa"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="data_variableActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="jToggleButton5">
+        <Component class="javax.swing.JToggleButton" name="laporan_variable">
           <Properties>
             <Property name="text" type="java.lang.String" value="Laporan"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton5ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="laporan_variableActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="jToggleButton4">
+        <Component class="javax.swing.JToggleButton" name="dashboard_variable">
           <Properties>
             <Property name="text" type="java.lang.String" value="Dashboard"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dashboard_variableActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>

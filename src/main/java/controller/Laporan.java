@@ -11,11 +11,11 @@ public class Laporan extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        Tunggakan = new javax.swing.JToggleButton();
-        jToggleButton3 = new javax.swing.JToggleButton();
-        jToggleButton5 = new javax.swing.JToggleButton();
-        jToggleButton4 = new javax.swing.JToggleButton();
+        riwayat_variable = new javax.swing.JToggleButton();
+        tagihan_variable = new javax.swing.JToggleButton();
+        data_variable = new javax.swing.JToggleButton();
+        laporan_variable = new javax.swing.JToggleButton();
+        dashboard_variable = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -49,17 +49,20 @@ public class Laporan extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jToggleButton1.setText("Riwayat");
+        riwayat_variable.setText("Riwayat");
+        riwayat_variable.addActionListener(this::riwayat_variableActionPerformed);
 
-        Tunggakan.setText("Tagihan");
+        tagihan_variable.setText("Tagihan");
+        tagihan_variable.addActionListener(this::tagihan_variableActionPerformed);
 
-        jToggleButton3.setText("Data Siswa");
-        jToggleButton3.addActionListener(this::jToggleButton3ActionPerformed);
+        data_variable.setText("Data Siswa");
+        data_variable.addActionListener(this::data_variableActionPerformed);
 
-        jToggleButton5.setText("Laporan");
-        jToggleButton5.addActionListener(this::jToggleButton5ActionPerformed);
+        laporan_variable.setText("Laporan");
+        laporan_variable.addActionListener(this::laporan_variableActionPerformed);
 
-        jToggleButton4.setText("Dashboard");
+        dashboard_variable.setText("Dashboard");
+        dashboard_variable.addActionListener(this::dashboard_variableActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Historic", 1, 18)); // NOI18N
         jLabel1.setText("Sistem SPP");
@@ -83,11 +86,11 @@ public class Laporan extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToggleButton4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToggleButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Tunggakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToggleButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(dashboard_variable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(data_variable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tagihan_variable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(riwayat_variable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(laporan_variable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -125,15 +128,15 @@ public class Laporan extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dashboard_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(data_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(Tunggakan, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tagihan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                .addComponent(riwayat_variable, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jToggleButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(laporan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(149, 149, 149)
                 .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -411,13 +414,29 @@ public class Laporan extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton3ActionPerformed
+    private void data_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_data_variableActionPerformed
+        // Berpindah halaman menggunakan method statis gantihalaman dari class properties.ganti_halaman
+        properties.ganti_halaman.gantihalaman(this, new DataSiswa());
+    }//GEN-LAST:event_data_variableActionPerformed
 
-    private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton5ActionPerformed
+    private void laporan_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_laporan_variableActionPerformed
+
+    }//GEN-LAST:event_laporan_variableActionPerformed
+
+    private void dashboard_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboard_variableActionPerformed
+        // Berpindah halaman menggunakan method statis gantihalaman dari class properties.ganti_halaman
+        properties.ganti_halaman.gantihalaman(this, new Dashboard());
+    }//GEN-LAST:event_dashboard_variableActionPerformed
+
+    private void tagihan_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tagihan_variableActionPerformed
+        // Berpindah halaman menggunakan method statis gantihalaman dari class properties.ganti_halaman
+        properties.ganti_halaman.gantihalaman(this, new Tagihan());
+    }//GEN-LAST:event_tagihan_variableActionPerformed
+
+    private void riwayat_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_riwayat_variableActionPerformed
+        // Berpindah halaman menggunakan method statis gantihalaman dari class properties.ganti_halaman
+        properties.ganti_halaman.gantihalaman(this, new Riwayat());
+    }//GEN-LAST:event_riwayat_variableActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -434,7 +453,8 @@ public class Laporan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton Tunggakan;
+    private javax.swing.JToggleButton dashboard_variable;
+    private javax.swing.JToggleButton data_variable;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
@@ -466,9 +486,8 @@ public class Laporan extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JToggleButton jToggleButton4;
-    private javax.swing.JToggleButton jToggleButton5;
+    private javax.swing.JToggleButton laporan_variable;
+    private javax.swing.JToggleButton riwayat_variable;
+    private javax.swing.JToggleButton tagihan_variable;
     // End of variables declaration//GEN-END:variables
 }
