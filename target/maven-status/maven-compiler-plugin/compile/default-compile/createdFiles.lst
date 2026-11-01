@@ -10,3 +10,4 @@ controller\Dashboard.class
 properties\blur_kotak.class
 controller\Tagihan$1.class
 dao\Database.class
+properties\AppTheme.class

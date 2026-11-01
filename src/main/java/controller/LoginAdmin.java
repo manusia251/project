@@ -4,7 +4,7 @@ import dao.Database;
 import dao.UserDao;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import com.formdev.flatlaf.FlatLightLaf;
+import properties.AppTheme;
 
 public class LoginAdmin extends javax.swing.JFrame {
     
@@ -155,9 +155,9 @@ public class LoginAdmin extends javax.swing.JFrame {
 
     public static void main(String args[]) {
         try {
-            // FlatLaf dipasang sebelum JFrame dibuat agar seluruh komponen
-            // login dan halaman berikutnya menggunakan tema yang sama.
-            FlatLightLaf.setup();
+            // Tema dipasang sebelum JFrame dibuat agar seluruh halaman
+            // menggunakan warna, font, tabel, dan tombol yang konsisten.
+            AppTheme.setup();
         } catch (Exception ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }

@@ -1,6 +1,5 @@
 // Package controller: Berisi kelas-kelas kontroler antarmuka (GUI) dan logika tampilan
 package controller;
-
 import dao.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -632,6 +631,7 @@ public class Tagihan extends javax.swing.JFrame {
 
     private void Tagihan_variableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Tagihan_variableActionPerformed
         // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null,"kamu sudah di tab tagihan");
     }//GEN-LAST:event_Tagihan_variableActionPerformed
 
     private void Riwayat_variabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Riwayat_variabelActionPerformed
