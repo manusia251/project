@@ -1,5 +1,8 @@
 controller\DataSiswa$SelRenderer.class
+controller\Riwayat$KeteranganRenderer.class
+controller\Riwayat$4.class
 controller\DataSiswa$2.class
+controller\Riwayat$BarisRenderer.class
 controller\DataSiswa$StatusRenderer.class
 controller\DataSiswa$4.class
 controller\DataSiswa$7.class
@@ -12,7 +15,7 @@ properties\blur_kotak.class
 controller\DataSiswa$PanelKacaUI.class
 controller\DataSiswa$5.class
 properties\AppTheme.class
-controller\Riwayat$SelRenderer.class
+controller\Riwayat$3.class
 controller\Laporan.class
 controller\Dshbrd.class
 controller\DataSiswa$HeaderRenderer.class
@@ -33,3 +36,4 @@ controller\DataSiswa$Transaksi.class
 controller\Tagihan$1.class
 controller\DataSiswa$1.class
 dao\Database.class
+controller\Riwayat$JudulKolomRenderer.class

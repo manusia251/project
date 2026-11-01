@@ -30,7 +30,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,19 +91,19 @@ public class DataSiswa extends javax.swing.JFrame {
     // supaya semua halaman terlihat satu keluarga.
     // ------------------------------------------------------------------
     /** Hijau mint: sama dengan warna tombol MASUK di halaman Login. */
-    private static final Color MINT = new Color(169, 203, 183);
+    static final Color MINT = new Color(169, 203, 183);
     /** Mint sangat terang: sama dengan warna garis kolom input di halaman Login. */
-    private static final Color MINT_TERANG = new Color(220, 233, 226);
+    static final Color MINT_TERANG = new Color(220, 233, 226);
     /** Teks gelap kehijauan, dipakai di atas kartu putih (tabel) dan tombol mint. */
-    private static final Color TEKS = new Color(26, 46, 38);
+    static final Color TEKS = new Color(26, 46, 38);
     /** Teks redup untuk label kecil di atas kaca gelap. */
-    private static final Color TEKS_REDUP = new Color(214, 232, 222);
+    static final Color TEKS_REDUP = new Color(214, 232, 222);
     /** Garis pemisah antar baris tabel. */
-    private static final Color GARIS = new Color(170, 190, 180, 120);
+    static final Color GARIS = new Color(170, 190, 180, 120);
     /** Warna baris tabel yang sedang dipilih (mint transparan). */
-    private static final Color BARIS_DIPILIH = new Color(169, 203, 183, 150);
+    static final Color BARIS_DIPILIH = new Color(169, 203, 183, 150);
     /** Warna baris ganjil tabel (belang-belang tipis). */
-    private static final Color BARIS_GANJIL = new Color(60, 110, 85, 22);
+    static final Color BARIS_GANJIL = new Color(60, 110, 85, 22);
 
     // Urutan bulan mengikuti tahun ajaran sekolah (Juli sampai Juni).
     private static final String[] URUTAN_BULAN = {
@@ -259,10 +258,10 @@ public class DataSiswa extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tagihan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(riwayat_variable, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                .addComponent(riwayat_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(laporan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(149, 149, 149)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -330,7 +329,7 @@ public class DataSiswa extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -415,11 +414,13 @@ public class DataSiswa extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(SideBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(10, Short.MAX_VALUE))
+                .addComponent(SideBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -527,21 +528,11 @@ public class DataSiswa extends javax.swing.JFrame {
         jLabel19.setFont(jLabel19.getFont().deriveFont(java.awt.Font.BOLD));
         jLabel18.setForeground(TEKS_REDUP);                // "Petugas TU"
 
-        // Logo aplikasi di samping judul "Sistem SPP".
-        BufferedImage logo = muatLogo();
-        if (logo != null) {
-            icon.setIcon(new javax.swing.ImageIcon(logo.getScaledInstance(37, 37, java.awt.Image.SCALE_SMOOTH)));
-            icon.setText("");
-            setIconImage(logo); // logo yang sama juga dipakai sebagai ikon jendela
-        } else {
-            // Cadangan jika file logo tidak ditemukan: lencana "SPP".
-            icon.setText("SPP");
-            icon.setOpaque(true);
-            icon.setBackground(Color.WHITE);
-            icon.setForeground(TEKS);
-            icon.setFont(icon.getFont().deriveFont(java.awt.Font.BOLD, 12f));
-            icon.setHorizontalAlignment(SwingConstants.CENTER);
-        }
+        // Logo aplikasi di samping judul "Sistem SPP": topi wisuda + koin, digambar vektor
+        // dengan warna mint/putih agar serasi dengan tema hutan (tidak lagi memakai logo.png biru).
+        icon.setIcon(new IkonVektor(IkonVektor.Jenis.LOGO, 37));
+        icon.setText("");
+        setIconImage(IkonVektor.buatGambarLogo(64)); // logo yang sama dipakai sebagai ikon jendela
 
         // Tombol menu: urutan tombol dan ikonnya harus sama.
         JToggleButton[] menuTombol = {dashboard_variable, data_variable, tagihan_variable,
@@ -610,23 +601,6 @@ public class DataSiswa extends javax.swing.JFrame {
         boolean hover = exit.getModel().isRollover();
         Color warna = hover ? new Color(255, 170, 170) : new Color(255, 255, 255, 225);
         new IkonVektor(IkonVektor.Jenis.KELUAR, 22).lukis(g, 24, exit.getY() + (exit.getHeight() - 22) / 2, warna);
-    }
-
-    /** Mencari logo: pertama di classpath, lalu di folder sumber proyek sebagai cadangan. */
-    private BufferedImage muatLogo() {
-        try {
-            java.net.URL url = getClass().getResource("/gambar/logo.png");
-            if (url != null) {
-                return ImageIO.read(url);
-            }
-            File berkas = new File("src/main/java/gambar/logo.png");
-            if (berkas.exists()) {
-                return ImageIO.read(berkas);
-            }
-        } catch (java.io.IOException e) {
-            logger.log(java.util.logging.Level.WARNING, "Logo tidak dapat dimuat", e);
-        }
-        return null;
     }
 
     /**
@@ -1260,7 +1234,7 @@ public class DataSiswa extends javax.swing.JFrame {
      * Panel kaca (PanelKacaUI) memotong bagian buram tersebut sebagai isi kacanya,
      * itulah yang membuat efek "frosted glass" yang sebenarnya.
      */
-    private static class LatarKaca extends JPanel {
+    static class LatarKaca extends JPanel {
 
         private final BufferedImage foto;     // foto asli (forest.jpg)
         private BufferedImage latarJadi;      // foto yang sudah dipotong pas jendela + digelapkan
@@ -1384,7 +1358,7 @@ public class DataSiswa extends javax.swing.JFrame {
      * + kilau tipis di bagian atas + garis tepi terang. Sudut membulat dan halus.
      * Dipasang dengan panel.setUI(...) sehingga panel dari palette tidak perlu diganti.
      */
-    private static class PanelKacaUI extends BasicPanelUI {
+    static class PanelKacaUI extends BasicPanelUI {
 
         private final int sudut;                                 // kelengkungan sudut (px)
         private final Color tint;                                // warna isi kaca (transparan)
@@ -1494,7 +1468,7 @@ public class DataSiswa extends javax.swing.JFrame {
      * Cara menggambar tombol bergaya kaca. Satu kelas dipakai untuk semua tombol di halaman ini;
      * tampilan dibedakan oleh enum Gaya.
      */
-    private static class TombolKacaUI extends BasicButtonUI {
+    static class TombolKacaUI extends BasicButtonUI {
 
         /** Jenis tampilan tombol. */
         enum Gaya {
@@ -1612,7 +1586,7 @@ public class DataSiswa extends javax.swing.JFrame {
      * bisa mengikuti keadaan tombol (aktif / hover).
      * Semua ikon dirancang pada kotak 24 x 24 lalu diskalakan ke ukuran yang diminta.
      */
-    private static class IkonVektor implements Icon {
+    static class IkonVektor implements Icon {
 
         /** Daftar ikon yang tersedia. */
         enum Jenis {
@@ -1622,7 +1596,8 @@ public class DataSiswa extends javax.swing.JFrame {
             RIWAYAT,    // jam
             LAPORAN,    // grafik batang
             PENGGUNA,   // orang (garis luar) untuk admin
-            KELUAR      // pintu dengan panah keluar
+            KELUAR,     // pintu dengan panah keluar
+            LOGO        // logo aplikasi: topi wisuda + koin SPP dalam lencana kaca
         }
 
         private final Jenis jenis;
@@ -1641,6 +1616,15 @@ public class DataSiswa extends javax.swing.JFrame {
         @Override
         public int getIconHeight() {
             return ukuran;
+        }
+
+        /** Logo aplikasi sebagai gambar (untuk ikon jendela), digambar di atas latar transparan. */
+        static BufferedImage buatGambarLogo(int px) {
+            BufferedImage gambar = new BufferedImage(px, px, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = gambar.createGraphics();
+            new IkonVektor(Jenis.LOGO, px).lukis(g, 0, 0, Color.WHITE);
+            g.dispose();
+            return gambar;
         }
 
         /** Dipanggil Swing ketika ikon dipasang pada tombol; warna mengikuti keadaan tombol. */
@@ -1708,6 +1692,45 @@ public class DataSiswa extends javax.swing.JFrame {
                     g.draw(new Ellipse2D.Double(8, 3.5, 8, 8));
                     g.draw(new Arc2D.Double(4, 14, 16, 14, 0, 180, Arc2D.OPEN));
                 }
+                case LOGO -> {
+                    // Lencana kaca bersudut membulat sebagai dasar logo.
+                    RoundRectangle2D lencana = new RoundRectangle2D.Double(0.6, 0.6, 22.8, 22.8, 8, 8);
+                    g.setPaint(new GradientPaint(0, 0, new Color(120, 190, 150, 235), 0, 24, new Color(34, 92, 64, 235)));
+                    g.fill(lencana);
+                    g.setColor(new Color(255, 255, 255, 150));
+                    g.setStroke(new BasicStroke(1f));
+                    g.draw(lencana);
+
+                    // Topi wisuda: papan belah ketupat + alas melengkung + tali jumbai.
+                    g.setColor(Color.WHITE);
+                    Path2D papan = new Path2D.Double();
+                    papan.moveTo(12, 3.6);
+                    papan.lineTo(21, 7.6);
+                    papan.lineTo(12, 11.6);
+                    papan.lineTo(3, 7.6);
+                    papan.closePath();
+                    g.fill(papan);
+                    Path2D alas = new Path2D.Double();
+                    alas.moveTo(7, 10.6);
+                    alas.lineTo(7, 13.2);
+                    alas.quadTo(12, 16.4, 17, 13.2);
+                    alas.lineTo(17, 10.6);
+                    alas.lineTo(12, 13);
+                    alas.closePath();
+                    g.setColor(new Color(255, 255, 255, 215));
+                    g.fill(alas);
+                    g.setColor(new Color(255, 226, 150));
+                    g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g.draw(new Line2D.Double(21, 7.6, 21, 12.4));
+                    g.fill(new Ellipse2D.Double(20.1, 12, 1.8, 2.2));
+
+                    // Koin di bawah topi (melambangkan pembayaran SPP).
+                    g.setColor(new Color(255, 226, 150));
+                    g.fill(new Ellipse2D.Double(8.2, 15.6, 7.6, 7.6));
+                    g.setColor(new Color(34, 92, 64));
+                    g.setStroke(new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g.draw(new Ellipse2D.Double(9.6, 17, 5.2, 5.2)); // cincin dalam koin
+                }
                 case KELUAR -> {
                     // Kurung pintu di kiri dan panah menuju keluar di kanan.
                     Path2D pintu = new Path2D.Double();
@@ -1734,7 +1757,7 @@ public class DataSiswa extends javax.swing.JFrame {
      * Renderer judul kolom: pita hijau pucat dengan huruf tebal, garis tipis di bawahnya.
      * Perataan teks mengikuti isi kolomnya (NO/NIS tengah, TAGIHAN kanan, lainnya kiri).
      */
-    private static class HeaderRenderer extends DefaultTableCellRenderer {
+    static class HeaderRenderer extends DefaultTableCellRenderer {
 
         static final Color LATAR_HEADER = new Color(226, 236, 230);
 
@@ -1756,11 +1779,11 @@ public class DataSiswa extends javax.swing.JFrame {
     }
 
     /** Renderer sel: perataan, format teks, warna selang-seling, dan warna seleksi mint transparan. */
-    private static class SelRenderer extends DefaultTableCellRenderer {
+    static class SelRenderer extends DefaultTableCellRenderer {
 
         private final int rata;                      // perataan teks (kiri/tengah/kanan)
         private final Function<Object, String> format; // pengubah nilai menjadi teks (boleh null)
-        private Color latarBaris;                    // warna latar baris saat ini (boleh null = transparan)
+        protected Color latarBaris;                  // warna latar baris saat ini (boleh null = transparan)
 
         SelRenderer(int rata, Function<Object, String> format) {
             this.rata = rata;
@@ -1812,7 +1835,7 @@ public class DataSiswa extends javax.swing.JFrame {
     }
 
     /** Renderer kolom status: teks ditampilkan sebagai pil berwarna (hijau = lunas, oranye = menunggak). */
-    private static class StatusRenderer extends SelRenderer {
+    static class StatusRenderer extends SelRenderer {
 
         private String label = "";
         private Color latarPil = Color.LIGHT_GRAY;

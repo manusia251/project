@@ -1,12 +1,28 @@
 package controller;
 
+import controller.DataSiswa.HeaderRenderer;
+import controller.DataSiswa.IkonVektor;
+import controller.DataSiswa.PanelKacaUI;
+import controller.DataSiswa.SelRenderer;
+import controller.DataSiswa.TombolKacaUI;
 import dao.Database;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,35 +33,47 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.function.Function;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import properties.AppTheme;
 
+/**
+ * Halaman Riwayat Transaksi (daftar pembayaran lunas, pembatalan, dan penghapusan catatan ganda).
+ *
+ * Cara kerja file ini (sama dengan DataSiswa.java):
+ *  1. initComponents()  -> kode GUI Builder NetBeans (hasil drag and drop, tidak diubah).
+ *  2. siapkanTampilan() -> "mendandani" komponen dengan tema glassmorphism yang sama dengan
+ *                          halaman Data Siswa (kelas desainnya dipakai bersama dari DataSiswa).
+ *  3. siapkanLogika()   -> menghubungkan tombol, tabel, dan combo box dengan aksi.
+ *  4. muatData()        -> mengambil riwayat dari database SQLite lalu menampilkannya di tabel.
+ */
 public class Riwayat extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Riwayat.class.getName());
 
-    // Warna tema; hijau yang sama dengan sidebar Dashboard.
-    private static final Color HIJAU = new Color(41, 112, 69);
-    private static final Color HIJAU_MUDA = new Color(220, 240, 228);
-    private static final Color LATAR = new Color(241, 245, 249);
-    private static final Color TEKS = new Color(30, 41, 59);
-    private static final Color TEKS_REDUP = new Color(100, 116, 139);
-    private static final Color GARIS = new Color(226, 232, 240);
+    // Warna khusus halaman ini (warna tema lain dipakai dari DataSiswa agar tampilannya seragam).
     private static final Color MERAH_TEKS = new Color(153, 27, 27);
-    private static final Color MERAH_LATAR = new Color(254, 242, 242);
+    private static final Color BARIS_DUPLIKAT = new Color(254, 202, 202, 150);
 
     private static final String KET_LUNAS = "Lunas";
     private static final String KET_DUPLIKAT = "DUPLIKAT";
+    private static final int KOLOM_KWITANSI = 0;
+    private static final int KOLOM_NAMA = 3;
+    private static final int KOLOM_BULAN = 5;
     private static final int KOLOM_KETERANGAN = 7;
 
     // Catatan lunas dianggap duplikat jika ada catatan lunas lain untuk siswa, bulan,
@@ -58,15 +86,17 @@ public class Riwayat extends javax.swing.JFrame {
                   AND d.status = 'lunas'
                   AND d.id_pembayaran < p.id_pembayaran)""";
 
+    // Kolom: NO. KWITANSI, TANGGAL, NIS, NAMA SISWA, KELAS, BULAN, JUMLAH, KETERANGAN.
     private final DefaultTableModel modelRiwayat = new DefaultTableModel(
             new Object[]{"NO. KWITANSI", "TANGGAL", "NIS", "NAMA SISWA", "KELAS", "BULAN", "JUMLAH", "KETERANGAN"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false;
+            return false; // tabel hanya untuk dilihat
         }
 
         @Override
         public Class<?> getColumnClass(int column) {
+            // Angka dan tanggal diurutkan sebagai angka/tanggal, bukan sebagai teks.
             return switch (column) {
                 case 0, 2, 6 -> Integer.class;
                 case 1 -> LocalDate.class;
@@ -75,14 +105,21 @@ public class Riwayat extends javax.swing.JFrame {
         }
     };
 
-    private Timer timerJam;
+    // Perataan teks tiap kolom (dipakai isi sel dan judul kolom agar sejajar).
+    private static final int[] RATA = {SwingConstants.CENTER, SwingConstants.CENTER, SwingConstants.CENTER,
+        SwingConstants.LEFT, SwingConstants.LEFT, SwingConstants.LEFT, SwingConstants.RIGHT, SwingConstants.LEFT};
+
+    private Timer timerJam;         // timer yang menggerakkan jam dan tanggal
 
     public Riwayat() {
+        // Latar hutan dipasang SEBELUM initComponents() supaya GUI Builder
+        // menaruh semua komponen di atas panel latar ini.
+        setContentPane(new DataSiswa.LatarKaca());
         initComponents();
         siapkanTampilan();   // finishing desain (di luar kode GUI Builder)
-        siapkanLogika();     // menghubungkan tombol, tabel, dan pergantian tab
-        jam();
-        muatData();
+        siapkanLogika();     // menghubungkan tombol, tabel, dan combo box
+        jam();               // menjalankan jam dan tanggal
+        muatData();          // mengisi tabel untuk pertama kali
     }
 
     @SuppressWarnings("unchecked")
@@ -203,15 +240,16 @@ public class Riwayat extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(Tagihan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(Riwayat_variable, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                .addComponent(Riwayat_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(Laporan_variable, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(149, 149, 149)
+                .addGap(0, 155, Short.MAX_VALUE)
                 .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(21, 21, 21))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -254,8 +292,8 @@ public class Riwayat extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 42, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 30, Short.MAX_VALUE))
         );
 
         HapusSemuaDuplikat.setText("Hapus Semua Duplikat");
@@ -317,7 +355,7 @@ public class Riwayat extends javax.swing.JFrame {
                     .addComponent(jLabel11))
                 .addGap(24, 24, 24)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -325,18 +363,19 @@ public class Riwayat extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
+                .addContainerGap(15, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
+                        .addGap(0, 30, Short.MAX_VALUE)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -374,94 +413,160 @@ public class Riwayat extends javax.swing.JFrame {
     // agar tidak hilang ketika form diedit lagi lewat NetBeans Designer.
     // =====================================================================
 
-    /** Merapikan tampilan: warna, font, tabel, dan tombol. */
+    /** Merapikan tampilan: kaca, warna, font, tabel, dan tombol (hanya "kulit"; posisi dari palette tetap). */
     private void siapkanTampilan() {
-        getContentPane().setBackground(LATAR);
-        gayaSidebar();
-
-        jLabel5.setForeground(TEKS);
-        for (JLabel label : new JLabel[]{jLabel6, jLabel8, Date, Time}) {
-            label.setForeground(TEKS_REDUP);
-        }
-        Date.setFont(Date.getFont().deriveFont(java.awt.Font.BOLD));
-        Time.setFont(Time.getFont().deriveFont(java.awt.Font.BOLD));
-        jLabel11.setForeground(TEKS_REDUP);
-        jLabel11.setFont(jLabel11.getFont().deriveFont(java.awt.Font.ITALIC));
-
-        gayaTabel();
-        gayaTombolAksi();
+        gayaKaca();          // panel utama dibuat seperti kaca buram
+        gayaSidebar();       // logo, ikon menu, ikon admin, dan tombol keluar
+        gayaHeader();        // judul halaman, jam, dan tahun ajaran
+        gayaTabel();         // tabel transparan dengan label keterangan berbentuk pil
+        gayaTombolAksi();    // tombol Hapus Semua Duplikat dan Hapus Transaksi
 
         setTitle("Sistem SPP - Riwayat Transaksi");
         pack();
     }
 
-    /** Sidebar hijau seperti Dashboard, menu aktif ditandai putih. */
-    private void gayaSidebar() {
-        jPanel1.setBackground(HIJAU);
-        jLabel1.setForeground(Color.WHITE);
-        jLabel3.setForeground(new Color(209, 232, 218));
-        jLabel4.setForeground(new Color(168, 205, 182));
-        jLabel18.setForeground(new Color(209, 232, 218));
-        jLabel19.setForeground(Color.WHITE);
-        jLabel19.setFont(jLabel19.getFont().deriveFont(java.awt.Font.BOLD));
+    /** Mengubah panel hasil drag and drop menjadi kaca buram (cara menggambar diganti, layout tetap). */
+    private void gayaKaca() {
+        // Sidebar: kaca gelap, di sisi kiri.
+        jPanel1.setUI(new PanelKacaUI(28, new Color(6, 22, 16, 150), new Color(255, 255, 255, 70),
+                (g, sidebar) -> lukisHiasanSidebar(g)));
+        // Panel isi utama: kaca asap yang lebih terang dari sidebar.
+        jPanel3.setUI(new PanelKacaUI(28, new Color(16, 36, 28, 105), new Color(255, 255, 255, 80), null));
+        // Kartu tabel: kaca putih (frosted) agar data mudah dibaca.
+        jPanel8.setUI(new PanelKacaUI(20, new Color(255, 255, 255, 222), new Color(255, 255, 255, 190), null));
+        jPanel8.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6)); // jarak tabel dari tepi kartu
 
-        // Logo: dipakai jika gambar ada di classpath, jika tidak tampil lencana "SPP".
-        java.net.URL logo = getClass().getResource("/gambar/logo.png");
-        if (logo != null) {
-            java.awt.Image gambar = new javax.swing.ImageIcon(logo).getImage()
-                    .getScaledInstance(37, 37, java.awt.Image.SCALE_SMOOTH);
-            icon.setIcon(new javax.swing.ImageIcon(gambar));
-            icon.setText("");
-        } else {
-            icon.setText("SPP");
-            icon.setOpaque(true);
-            icon.setBackground(Color.WHITE);
-            icon.setForeground(HIJAU);
-            icon.setFont(icon.getFont().deriveFont(java.awt.Font.BOLD, 12f));
-            icon.setHorizontalAlignment(SwingConstants.CENTER);
+        // PENTING: setUI() mengembalikan panel menjadi opaque; dimatikan lagi agar latar hutan terlihat.
+        for (JPanel p : new JPanel[]{jPanel1, jPanel3, jPanel8}) {
+            p.setOpaque(false);
         }
-
-        // Hanya satu menu yang boleh aktif; menu halaman ini langsung aktif.
-        ButtonGroup menu = new ButtonGroup();
-        for (JToggleButton tombol : new JToggleButton[]{
-            Dashboard, Data_siswa_variable, Tagihan_variable, Riwayat_variable, Laporan_variable}) {
-            menu.add(tombol);
-            tombol.setHorizontalAlignment(SwingConstants.LEFT);
-            tombol.setFocusPainted(false);
-            tombol.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            tombol.putClientProperty("FlatLaf.style",
-                    "background:#297045; foreground:#ffffff; hoverBackground:#35875a;"
-                    + "selectedBackground:#ffffff; selectedForeground:#297045;"
-                    + "borderWidth:0; focusWidth:0; arc:12; margin:2,14,2,14");
-        }
-        Riwayat_variable.setSelected(true);
-
-        jButton1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        jButton1.putClientProperty("FlatLaf.style",
-                "background:#297045; foreground:#ffffff; borderColor:#ffffff;"
-                + "hoverBackground:#35875a; focusWidth:0");
     }
 
+    /** Warna dan font judul halaman (kanan atas: tanggal, jam, tahun ajaran). */
+    private void gayaHeader() {
+        jLabel5.setForeground(Color.WHITE);
+        for (JLabel label : new JLabel[]{jLabel6, jLabel8, jLabel11, Date, Time}) {
+            label.setForeground(DataSiswa.TEKS_REDUP);
+        }
+        Date.setFont(Date.getFont().deriveFont(java.awt.Font.BOLD));
+        Time.setFont(Time.getFont().deriveFont(java.awt.Font.BOLD));
+        jLabel11.setFont(jLabel11.getFont().deriveFont(java.awt.Font.ITALIC));
+
+        // Combo box tahun ajaran memakai warna kolom input Login (sama dengan Data Siswa).
+        ComboBoxTahunAjaran.putClientProperty("FlatLaf.style",
+                "background:#b8c5c5; foreground:#183024; borderColor:#dce9e2;"
+                + "buttonBackground:#b8c5c5; buttonArrowColor:#183024;"
+                + "selectionBackground:#a9cbb7; selectionForeground:#183024");
+        ComboBoxTahunAjaran.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    /**
+     * Sidebar bergaya kaca: logo, ikon di setiap tombol menu, ikon admin, dan tombol keluar.
+     * Kolom ikon sejajar di x = 24, kolom teks sejajar di x = 56.
+     */
+    private void gayaSidebar() {
+        jLabel1.setForeground(Color.WHITE);                // "Sistem SPP"
+        jLabel3.setForeground(DataSiswa.TEKS_REDUP);       // "Pembayaran Sekolah"
+        jLabel4.setForeground(new Color(190, 215, 200));   // "MENU"
+        jLabel4.setText(jLabel4.getText().toUpperCase());
+        jLabel4.setFont(jLabel4.getFont().deriveFont(java.awt.Font.BOLD, 11f));
+        jLabel19.setForeground(Color.WHITE);               // "admin"
+        jLabel19.setFont(jLabel19.getFont().deriveFont(java.awt.Font.BOLD));
+        jLabel18.setForeground(DataSiswa.TEKS_REDUP);      // "Petugas TU"
+
+        // Logo aplikasi (topi wisuda + koin) yang sama dengan halaman Data Siswa.
+        icon.setIcon(new IkonVektor(IkonVektor.Jenis.LOGO, 37));
+        icon.setText("");
+        setIconImage(IkonVektor.buatGambarLogo(64));
+
+        // Tombol menu: urutan tombol dan ikonnya harus sama.
+        JToggleButton[] menuTombol = {Dashboard, Data_siswa_variable, Tagihan_variable,
+            Riwayat_variable, Laporan_variable};
+        IkonVektor.Jenis[] menuIkon = {IkonVektor.Jenis.DASHBOARD, IkonVektor.Jenis.SISWA,
+            IkonVektor.Jenis.TAGIHAN, IkonVektor.Jenis.RIWAYAT, IkonVektor.Jenis.LAPORAN};
+
+        // ButtonGroup: hanya satu menu yang boleh aktif dalam satu waktu.
+        ButtonGroup menu = new ButtonGroup();
+        for (int i = 0; i < menuTombol.length; i++) {
+            JToggleButton tombol = menuTombol[i];
+            menu.add(tombol);
+            tombol.setUI(new TombolKacaUI(TombolKacaUI.Gaya.MENU));
+            tombol.setIcon(new IkonVektor(menuIkon[i], 22));
+            tombol.setIconTextGap(10);
+            tombol.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 12));
+            tombol.setMargin(new Insets(0, 0, 0, 0));
+            tombol.setHorizontalAlignment(SwingConstants.LEFT);
+            tombol.setFont(tombol.getFont().deriveFont(java.awt.Font.BOLD, 13f));
+            tombol.setOpaque(false);
+            tombol.setContentAreaFilled(false);
+            tombol.setFocusPainted(false);
+            tombol.setRolloverEnabled(true); // dibutuhkan agar efek hover jalan
+            tombol.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
+        Riwayat_variable.setSelected(true); // halaman ini = Riwayat, jadi menunya aktif
+
+        // Tombol Keluar: hanya teks; ikonnya digambar oleh lukisHiasanSidebar() di kolom ikon.
+        jButton1.setUI(new TombolKacaUI(TombolKacaUI.Gaya.KELUAR));
+        jButton1.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 16));
+        jButton1.setMargin(new Insets(0, 0, 0, 0));
+        jButton1.setHorizontalAlignment(SwingConstants.LEFT);
+        jButton1.setFont(jButton1.getFont().deriveFont(java.awt.Font.BOLD, 13f));
+        jButton1.setOpaque(false);
+        jButton1.setContentAreaFilled(false);
+        jButton1.setFocusPainted(false);
+        jButton1.setRolloverEnabled(true);
+        jButton1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // Saat kursor melewati tombol Keluar, sidebar digambar ulang agar ikonnya ikut berubah warna.
+        jButton1.getModel().addChangeListener(e -> jPanel1.repaint());
+        // Klik pada ikon Keluar (di luar area teks) juga dianggap menekan tombol Keluar.
+        jPanel1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Rectangle areaIkon = new Rectangle(0, jButton1.getY(), jButton1.getX(), jButton1.getHeight());
+                if (areaIkon.contains(e.getPoint())) {
+                    jButton1.doClick();
+                }
+            }
+        });
+    }
+
+    /** Hiasan di atas kaca sidebar: ikon admin di samping "admin / Petugas TU" dan ikon pintu di samping "Keluar". */
+    private void lukisHiasanSidebar(Graphics2D g) {
+        int tengah = (jLabel19.getY() + jLabel18.getY() + jLabel18.getHeight()) / 2;
+        new IkonVektor(IkonVektor.Jenis.PENGGUNA, 26).lukis(g, 22, tengah - 13, new Color(255, 255, 255, 235));
+
+        boolean hover = jButton1.getModel().isRollover();
+        Color warna = hover ? new Color(255, 170, 170) : new Color(255, 255, 255, 225);
+        new IkonVektor(IkonVektor.Jenis.KELUAR, 22).lukis(g, 24, jButton1.getY() + (jButton1.getHeight() - 22) / 2, warna);
+    }
+
+    /** Mengatur tabel agar transparan di atas kartu kaca, lengkap dengan header dan baris. */
     private void gayaTabel() {
         TableRiwayatTransaksi.setModel(modelRiwayat);
-        TableRiwayatTransaksi.setAutoCreateRowSorter(true);
+        TableRiwayatTransaksi.setAutoCreateRowSorter(true); // klik judul kolom untuk mengurutkan
         TableRiwayatTransaksi.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        TableRiwayatTransaksi.setRowHeight(32);
+        TableRiwayatTransaksi.setRowHeight(34);
         TableRiwayatTransaksi.setShowVerticalLines(false);
         TableRiwayatTransaksi.setShowHorizontalLines(true);
-        TableRiwayatTransaksi.setGridColor(GARIS);
+        TableRiwayatTransaksi.setGridColor(DataSiswa.GARIS);
         TableRiwayatTransaksi.setIntercellSpacing(new Dimension(0, 1));
         TableRiwayatTransaksi.setFillsViewportHeight(true);
+        TableRiwayatTransaksi.setOpaque(false);  // agar kartu kaca terlihat di belakang tabel
         TableRiwayatTransaksi.getTableHeader().setReorderingAllowed(false);
-        TableRiwayatTransaksi.getTableHeader().setPreferredSize(new Dimension(0, 34));
-        TableRiwayatTransaksi.getTableHeader().setFont(
-                TableRiwayatTransaksi.getTableHeader().getFont().deriveFont(java.awt.Font.BOLD, 12f));
-        jScrollPane1.setBorder(BorderFactory.createLineBorder(GARIS));
+        TableRiwayatTransaksi.getTableHeader().setPreferredSize(new Dimension(0, 36));
+        TableRiwayatTransaksi.getTableHeader().setDefaultRenderer(new JudulKolomRenderer());
 
-        int[] lebar = {100, 100, 60, 200, 100, 90, 110, 100};
-        int[] rata = {SwingConstants.CENTER, SwingConstants.CENTER, SwingConstants.CENTER,
-            SwingConstants.LEFT, SwingConstants.LEFT, SwingConstants.LEFT,
-            SwingConstants.RIGHT, SwingConstants.CENTER};
+        // Scroll pane transparan tanpa garis tepi; tepinya sudah diwakili kartu kaca.
+        jScrollPane1.setOpaque(false);
+        jScrollPane1.getViewport().setOpaque(false);
+        jScrollPane1.setBorder(BorderFactory.createEmptyBorder());
+        jScrollPane1.setViewportBorder(null);
+        JPanel sudut = new JPanel();
+        sudut.setBackground(HeaderRenderer.LATAR_HEADER);
+        jScrollPane1.setCorner(JScrollPane.UPPER_RIGHT_CORNER, sudut);
+
+        int[] lebar = {110, 100, 60, 190, 90, 90, 110, 120};
         DateTimeFormatter formatTanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         for (int i = 0; i < lebar.length; i++) {
             Function<Object, String> format = null;
@@ -472,22 +577,29 @@ public class Riwayat extends javax.swing.JFrame {
             }
             TableRiwayatTransaksi.getColumnModel().getColumn(i).setPreferredWidth(lebar[i]);
             TableRiwayatTransaksi.getColumnModel().getColumn(i).setCellRenderer(
-                    new SelRenderer(rata[i], format, i == KOLOM_KETERANGAN));
+                    i == KOLOM_KETERANGAN ? new KeteranganRenderer() : new BarisRenderer(RATA[i], format));
         }
     }
 
+    /** Memberi gaya kaca pada kedua tombol aksi. */
     private void gayaTombolAksi() {
-        // Hapus Semua Duplikat = tindakan besar (merah penuh); Hapus Transaksi = merah garis tepi.
-        HapusSemuaDuplikat.putClientProperty("FlatLaf.style",
-                "background:#dc2626; foreground:#ffffff; hoverBackground:#b91c1c;"
-                + "pressedBackground:#991b1b; borderWidth:0; focusWidth:0");
-        HapusTransaksi.putClientProperty("FlatLaf.style",
-                "background:#ffffff; foreground:#dc2626; borderColor:#dc2626; hoverBackground:#fef2f2");
-        HapusSemuaDuplikat.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        HapusTransaksi.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        HapusTransaksi.setToolTipText("Pilih catatan berstatus DUPLIKAT pada tabel");
-        HapusTransaksi.setEnabled(false);
-        HapusSemuaDuplikat.setEnabled(false);
+        pasangGayaAksi(HapusSemuaDuplikat, TombolKacaUI.Gaya.BAHAYA);
+        pasangGayaAksi(HapusTransaksi, TombolKacaUI.Gaya.BAHAYA);
+        HapusTransaksi.setEnabled(false); // aktif setelah ada baris yang dipilih (lihat perbaruiTombolHapus)
+        perbaruiTombolHapus();
+    }
+
+    /** Pengaturan yang sama untuk kedua tombol aksi. */
+    private void pasangGayaAksi(JButton tombol, TombolKacaUI.Gaya gaya) {
+        tombol.setUI(new TombolKacaUI(gaya));
+        tombol.setBorder(BorderFactory.createEmptyBorder(7, 20, 7, 20));
+        tombol.setMargin(new Insets(0, 0, 0, 0));
+        tombol.setFont(tombol.getFont().deriveFont(java.awt.Font.BOLD, 13f));
+        tombol.setOpaque(false);
+        tombol.setContentAreaFilled(false);
+        tombol.setFocusPainted(false);
+        tombol.setRolloverEnabled(true);
+        tombol.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     /** Menghubungkan semua komponen ke logika. */
@@ -495,12 +607,24 @@ public class Riwayat extends javax.swing.JFrame {
         HapusTransaksi.addActionListener(e -> hapusTransaksi());
         HapusSemuaDuplikat.addActionListener(e -> hapusSemuaDuplikat());
         jButton1.addActionListener(e -> keluar());
-        ComboBoxTahunAjaran.addActionListener(e -> muatData());
+        ComboBoxTahunAjaran.addActionListener(e -> muatData()); // ganti tahun ajaran -> muat ulang tabel
 
-        // Hapus Transaksi hanya aktif jika baris terpilih berstatus DUPLIKAT.
+        // Hapus Transaksi hanya aktif jika ada baris yang dipilih.
         TableRiwayatTransaksi.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 perbaruiTombolHapus();
+            }
+        });
+
+        // Tombol Delete di keyboard sama dengan menekan tombol Hapus Transaksi.
+        TableRiwayatTransaksi.getInputMap(JComponent.WHEN_FOCUSED)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "hapusTransaksi");
+        TableRiwayatTransaksi.getActionMap().put("hapusTransaksi", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (HapusTransaksi.isEnabled()) {
+                    hapusTransaksi();
+                }
             }
         });
 
@@ -515,11 +639,17 @@ public class Riwayat extends javax.swing.JFrame {
         });
     }
 
+    /** Menyesuaikan tombol Hapus Transaksi dengan baris yang sedang dipilih. */
     private void perbaruiTombolHapus() {
-        int baris = TableRiwayatTransaksi.getSelectedRow();
-        boolean duplikatDipilih = baris != -1 && KET_DUPLIKAT.equals(
-                modelRiwayat.getValueAt(TableRiwayatTransaksi.convertRowIndexToModel(baris), KOLOM_KETERANGAN));
-        HapusTransaksi.setEnabled(duplikatDipilih);
+        int m = modelTerpilihTanpaPeringatan();
+        HapusTransaksi.setEnabled(m != -1);
+        if (m == -1) {
+            HapusTransaksi.setToolTipText("Pilih transaksi pada tabel terlebih dahulu");
+        } else if (adalahDuplikat(m)) {
+            HapusTransaksi.setToolTipText("Hapus catatan duplikat ini");
+        } else {
+            HapusTransaksi.setToolTipText("Batalkan pembayaran ini (tagihan kembali menjadi menunggak)");
+        }
     }
 
     /** Jam dan tanggal berjalan otomatis (format jam dipendekkan agar muat di label). */
@@ -531,10 +661,11 @@ public class Riwayat extends javax.swing.JFrame {
             Date.setText(LocalDate.now().format(formatTanggal));
         };
         perbarui.run();
-        timerJam = new Timer(1000, e -> perbarui.run());
+        timerJam = new Timer(1000, e -> perbarui.run()); // diperbarui setiap 1000 ms
         timerJam.start();
     }
 
+    /** Konfirmasi keluar; jika "Ya", kembali ke halaman Login. */
     private void keluar() {
         int pilihan = JOptionPane.showConfirmDialog(this,
                 "Apakah kamu yakin ingin keluar?", "Konfirmasi keluar",
@@ -550,6 +681,7 @@ public class Riwayat extends javax.swing.JFrame {
         return String.valueOf(ComboBoxTahunAjaran.getSelectedItem());
     }
 
+    /** Mengubah angka menjadi format rupiah, contoh 500000 -> "Rp500.000". */
     private static String rupiah(int nominal) {
         return String.format(Locale.of("id", "ID"), "Rp%,d", nominal);
     }
@@ -565,11 +697,11 @@ public class Riwayat extends javax.swing.JFrame {
             ORDER BY p.tgl_bayar DESC, p.id_pembayaran DESC
             """.formatted(KONDISI_DUPLIKAT);
 
+        // Ingat kwitansi yang sedang dipilih supaya tetap terpilih setelah muat ulang.
         Integer kwitansiSebelumnya = null;
-        int barisTerpilih = TableRiwayatTransaksi.getSelectedRow();
-        if (barisTerpilih != -1) {
-            kwitansiSebelumnya = (Integer) modelRiwayat.getValueAt(
-                    TableRiwayatTransaksi.convertRowIndexToModel(barisTerpilih), 0);
+        int m0 = modelTerpilihTanpaPeringatan();
+        if (m0 != -1) {
+            kwitansiSebelumnya = (Integer) modelRiwayat.getValueAt(m0, KOLOM_KWITANSI);
         }
 
         int jumlahDuplikat = 0;
@@ -577,7 +709,7 @@ public class Riwayat extends javax.swing.JFrame {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tahunAjaranDipilih());
 
-            modelRiwayat.setRowCount(0);
+            modelRiwayat.setRowCount(0); // kosongkan tabel sebelum diisi ulang
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     boolean duplikat = rs.getInt("duplikat") == 1;
@@ -596,7 +728,6 @@ public class Riwayat extends javax.swing.JFrame {
             return;
         }
 
-        HapusSemuaDuplikat.setEnabled(jumlahDuplikat > 0);
         HapusSemuaDuplikat.setToolTipText(jumlahDuplikat > 0
                 ? jumlahDuplikat + " catatan duplikat pada tahun ajaran " + tahunAjaranDipilih()
                 : "Tidak ada catatan duplikat pada tahun ajaran " + tahunAjaranDipilih());
@@ -618,54 +749,80 @@ public class Riwayat extends javax.swing.JFrame {
         }
     }
 
+    /** Memilih (dan menggulir ke) baris dengan nomor kwitansi tertentu. */
     private void pilihBarisKwitansi(int kwitansi) {
         for (int m = 0; m < modelRiwayat.getRowCount(); m++) {
-            if ((Integer) modelRiwayat.getValueAt(m, 0) == kwitansi) {
+            if ((Integer) modelRiwayat.getValueAt(m, KOLOM_KWITANSI) == kwitansi) {
                 int tampil = TableRiwayatTransaksi.convertRowIndexToView(m);
                 if (tampil != -1) {
                     TableRiwayatTransaksi.setRowSelectionInterval(tampil, tampil);
+                    TableRiwayatTransaksi.scrollRectToVisible(TableRiwayatTransaksi.getCellRect(tampil, 0, true));
                 }
                 return;
             }
         }
     }
 
+    /** Baris model dari baris yang dipilih, atau -1 jika belum ada yang dipilih (tanpa peringatan). */
+    private int modelTerpilihTanpaPeringatan() {
+        int baris = TableRiwayatTransaksi.getSelectedRow();
+        // convertRowIndexToModel: baris yang tampil bisa berbeda dengan baris model jika tabel diurutkan.
+        return baris == -1 ? -1 : TableRiwayatTransaksi.convertRowIndexToModel(baris);
+    }
+
+    private boolean adalahDuplikat(int barisModel) {
+        return KET_DUPLIKAT.equals(modelRiwayat.getValueAt(barisModel, KOLOM_KETERANGAN));
+    }
+
+    /** Nama siswa untuk ditampilkan di dialog; tanda "-" jika siswanya sudah tidak ada di database. */
+    private String namaDiBaris(int barisModel) {
+        Object nama = modelRiwayat.getValueAt(barisModel, KOLOM_NAMA);
+        return nama == null ? "-" : nama.toString();
+    }
+
     // ------------------------------ AKSI ------------------------------
 
-    /** Menghapus satu catatan yang terpilih; hanya catatan DUPLIKAT yang boleh dihapus. */
+    /**
+     * Tombol "Hapus Transaksi" untuk transaksi yang dipilih:
+     *  - catatan DUPLIKAT -> catatannya dihapus dari database;
+     *  - catatan yang sah -> pembayaran dibatalkan: tagihannya kembali menjadi "menunggak"
+     *    (tagihan tidak dihapus supaya tetap muncul di halaman Tagihan).
+     */
     private void hapusTransaksi() {
-        int baris = TableRiwayatTransaksi.getSelectedRow();
-        if (baris == -1) {
+        int m = modelTerpilihTanpaPeringatan();
+        if (m == -1) {
             JOptionPane.showMessageDialog(this,
-                    "Pilih catatan DUPLIKAT pada tabel terlebih dahulu.",
-                    "Catatan belum dipilih", JOptionPane.WARNING_MESSAGE);
+                    "Pilih transaksi pada tabel terlebih dahulu.",
+                    "Transaksi belum dipilih", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        int m = TableRiwayatTransaksi.convertRowIndexToModel(baris);
-        int kwitansi = (Integer) modelRiwayat.getValueAt(m, 0);
-        String nama = String.valueOf(modelRiwayat.getValueAt(m, 3));
-        String bulan = String.valueOf(modelRiwayat.getValueAt(m, 5));
+        int kwitansi = (Integer) modelRiwayat.getValueAt(m, KOLOM_KWITANSI);
+        String nama = namaDiBaris(m);
+        String bulan = String.valueOf(modelRiwayat.getValueAt(m, KOLOM_BULAN));
+        String tahun = tahunAjaranDipilih();
 
-        if (!KET_DUPLIKAT.equals(modelRiwayat.getValueAt(m, KOLOM_KETERANGAN))) {
-            JOptionPane.showMessageDialog(this,
-                    "Kwitansi #" + kwitansi + " adalah catatan pembayaran yang sah.\n"
-                    + "Hanya catatan berstatus DUPLIKAT yang dapat dihapus.",
-                    "Tidak dapat dihapus", JOptionPane.INFORMATION_MESSAGE);
-            return;
+        if (adalahDuplikat(m)) {
+            hapusCatatanDuplikat(kwitansi, nama, bulan);
+        } else {
+            batalkanPembayaran(kwitansi, nama, bulan, tahun);
         }
+    }
 
+    private void hapusCatatanDuplikat(int kwitansi, String nama, String bulan) {
         int pilihan = JOptionPane.showOptionDialog(this,
                 "Hapus catatan duplikat kwitansi #" + kwitansi + "?\n"
-                + nama + " - " + bulan + "\n\nTindakan ini tidak dapat dibatalkan.",
+                + nama + " - " + bulan + "\n\nPembayaran aslinya tetap disimpan.\n"
+                + "Tindakan ini tidak dapat dibatalkan.",
                 "Konfirmasi hapus", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
                 new String[]{"Hapus", "Batal"}, "Batal");
         if (pilihan != 0) {
             return;
         }
 
-        // Kondisi duplikat diperiksa ulang di SQL agar catatan asli tidak terhapus.
-        String sql = "DELETE FROM Pembayaran AS p WHERE p.id_pembayaran = ? AND p.status = 'lunas' AND "
-                + KONDISI_DUPLIKAT;
+        // Kondisi duplikat diperiksa ulang di SQL agar catatan asli tidak ikut terhapus.
+        String sql = "DELETE FROM Pembayaran WHERE id_pembayaran IN ("
+                + "SELECT p.id_pembayaran FROM Pembayaran p WHERE p.id_pembayaran = ? AND p.status = 'lunas' AND "
+                + KONDISI_DUPLIKAT + ")";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, kwitansi);
@@ -680,12 +837,73 @@ public class Riwayat extends javax.swing.JFrame {
         }
     }
 
+    private void batalkanPembayaran(int kwitansi, String nama, String bulan, String tahun) {
+        int idSiswa = (Integer) modelRiwayat.getValueAt(modelTerpilihTanpaPeringatan(), 2);
+        // Jika bulan yang sama punya catatan duplikat, duplikat itu harus dibereskan lebih dulu.
+        int duplikatLain = hitungCatatanLunasLain(kwitansi, idSiswa, bulan, tahun);
+        if (duplikatLain < 0) {
+            return; // kesalahan database sudah ditampilkan
+        }
+        if (duplikatLain > 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Bulan " + bulan + " untuk " + nama + " masih punya " + duplikatLain
+                    + " catatan duplikat.\nHapus catatan DUPLIKAT-nya lebih dulu "
+                    + "(atau pakai \"Hapus Semua Duplikat\"), baru batalkan pembayaran aslinya.",
+                    "Masih ada duplikat", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int pilihan = JOptionPane.showOptionDialog(this,
+                "Batalkan pembayaran kwitansi #" + kwitansi + "?\n"
+                + nama + " - " + bulan + " " + tahun + "\n\n"
+                + "Transaksi hilang dari riwayat dan tagihan bulan ini kembali berstatus menunggak.",
+                "Konfirmasi hapus transaksi", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                new String[]{"Hapus transaksi", "Batal"}, "Batal");
+        if (pilihan != 0) {
+            return;
+        }
+
+        String sql = "UPDATE Pembayaran SET status = 'menunggak', tgl_bayar = NULL "
+                + "WHERE id_pembayaran = ? AND status = 'lunas'";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, kwitansi);
+            int berubah = ps.executeUpdate();
+            muatData();
+            JOptionPane.showMessageDialog(this,
+                    berubah > 0 ? "Transaksi dihapus. Tagihan " + bulan + " kembali menjadi menunggak."
+                            : "Tidak ada yang berubah; transaksi ini sudah tidak berstatus lunas.",
+                    berubah > 0 ? "Berhasil" : "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            tampilkanErrorDatabase("menghapus transaksi", e);
+        }
+    }
+
+    /** Jumlah catatan lunas lain (selain kwitansi ini) untuk siswa, bulan, dan tahun ajaran yang sama; -1 jika error. */
+    private int hitungCatatanLunasLain(int kwitansi, int idSiswa, String bulan, String tahun) {
+        String sql = "SELECT COUNT(*) FROM Pembayaran WHERE id_siswa = ? AND bulan = ? "
+                + "AND tahun_ajaran = ? AND status = 'lunas' AND id_pembayaran <> ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idSiswa);
+            ps.setString(2, bulan);
+            ps.setString(3, tahun);
+            ps.setInt(4, kwitansi);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException e) {
+            tampilkanErrorDatabase("memeriksa catatan duplikat", e);
+            return -1;
+        }
+    }
+
     /** Menghapus semua catatan DUPLIKAT pada tahun ajaran terpilih; catatan pertama tetap disimpan. */
     private void hapusSemuaDuplikat() {
         String tahun = tahunAjaranDipilih();
         int jumlah = 0;
         for (int m = 0; m < modelRiwayat.getRowCount(); m++) {
-            if (KET_DUPLIKAT.equals(modelRiwayat.getValueAt(m, KOLOM_KETERANGAN))) {
+            if (adalahDuplikat(m)) {
                 jumlah++;
             }
         }
@@ -706,8 +924,9 @@ public class Riwayat extends javax.swing.JFrame {
             return;
         }
 
-        String sql = "DELETE FROM Pembayaran AS p WHERE p.status = 'lunas' AND p.tahun_ajaran = ? AND "
-                + KONDISI_DUPLIKAT;
+        String sql = "DELETE FROM Pembayaran WHERE id_pembayaran IN ("
+                + "SELECT p.id_pembayaran FROM Pembayaran p WHERE p.status = 'lunas' AND p.tahun_ajaran = ? AND "
+                + KONDISI_DUPLIKAT + ")";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tahun);
@@ -728,48 +947,87 @@ public class Riwayat extends javax.swing.JFrame {
 
     // ---------------------------- RENDERER TABEL ----------------------------
 
-    /**
-     * Renderer sel: perataan, format teks, warna selang-seling, dan seleksi hijau.
-     * Baris DUPLIKAT diberi latar merah muda; kolom KETERANGAN ditebalkan dan diberi warna.
-     */
-    private class SelRenderer extends DefaultTableCellRenderer {
+    /** Judul kolom: gaya sama dengan Data Siswa, perataannya mengikuti isi kolom Riwayat. */
+    private static class JudulKolomRenderer extends HeaderRenderer {
 
-        private final int rata;
-        private final Function<Object, String> format;
-        private final boolean kolomKeterangan;
+        @Override
+        public Component getTableCellRendererComponent(JTable tabel, Object nilai, boolean dipilih,
+                boolean fokus, int baris, int kolom) {
+            super.getTableCellRendererComponent(tabel, nilai, dipilih, fokus, baris, kolom);
+            setHorizontalAlignment(RATA[tabel.convertColumnIndexToModel(kolom)]);
+            return this;
+        }
+    }
 
-        SelRenderer(int rata, Function<Object, String> format, boolean kolomKeterangan) {
-            this.rata = rata;
-            this.format = format;
-            this.kolomKeterangan = kolomKeterangan;
+    /** Renderer sel biasa; baris DUPLIKAT diberi latar merah muda dan teks merah tua. */
+    private class BarisRenderer extends SelRenderer {
+
+        BarisRenderer(int rata, Function<Object, String> format) {
+            super(rata, format);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable tabel, Object nilai, boolean dipilih,
                 boolean fokus, int baris, int kolom) {
-            String teks = format != null ? format.apply(nilai) : (nilai == null ? "" : nilai.toString());
-            super.getTableCellRendererComponent(tabel, teks, dipilih, false, baris, kolom);
-            setHorizontalAlignment(rata);
-            setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-
-            int m = tabel.convertRowIndexToModel(baris);
-            boolean duplikat = KET_DUPLIKAT.equals(modelRiwayat.getValueAt(m, KOLOM_KETERANGAN));
-
-            Color teksWarna = duplikat ? MERAH_TEKS : TEKS;
-            if (kolomKeterangan) {
-                teksWarna = duplikat ? MERAH_TEKS : new Color(21, 128, 61);
-            }
-            setForeground(teksWarna);
-            setFont(tabel.getFont().deriveFont(kolomKeterangan ? java.awt.Font.BOLD : java.awt.Font.PLAIN));
-
-            if (dipilih) {
-                setBackground(HIJAU_MUDA);
-            } else if (duplikat) {
-                setBackground(MERAH_LATAR);
-            } else {
-                setBackground(baris % 2 == 0 ? Color.WHITE : new Color(248, 250, 252));
+            super.getTableCellRendererComponent(tabel, nilai, dipilih, fokus, baris, kolom);
+            if (adalahDuplikat(tabel.convertRowIndexToModel(baris))) {
+                setForeground(MERAH_TEKS);
+                if (!dipilih) {
+                    latarBaris = BARIS_DUPLIKAT;
+                }
             }
             return this;
+        }
+    }
+
+    /** Renderer kolom keterangan: teks ditampilkan sebagai pil (hijau = lunas, merah = duplikat). */
+    private class KeteranganRenderer extends BarisRenderer {
+
+        private String label = "";
+        private Color latarPil = Color.LIGHT_GRAY;
+        private Color teksPil = DataSiswa.TEKS;
+
+        KeteranganRenderer() {
+            super(SwingConstants.LEFT, null);
+        }
+
+        @Override
+        protected String teks(Object nilai, int barisTampil) {
+            return ""; // teks digambar sendiri di dalam pil
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable tabel, Object nilai, boolean dipilih,
+                boolean fokus, int baris, int kolom) {
+            super.getTableCellRendererComponent(tabel, nilai, dipilih, fokus, baris, kolom);
+            label = String.valueOf(nilai).toUpperCase();
+            if (KET_DUPLIKAT.equals(nilai)) {
+                latarPil = new Color(254, 202, 202);
+                teksPil = new Color(153, 27, 27);
+            } else {
+                latarPil = new Color(198, 240, 214);
+                teksPil = new Color(21, 110, 61);
+            }
+            return this;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g); // gambar latar baris
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.setFont(getFont().deriveFont(java.awt.Font.BOLD, 11f));
+            FontMetrics fm = g2.getFontMetrics();
+            int lebarPil = fm.stringWidth(label) + 24;
+            int tinggiPil = 22;
+            int x = 10;
+            int y = (getHeight() - tinggiPil) / 2;
+            g2.setColor(latarPil);
+            g2.fill(new RoundRectangle2D.Float(x, y, lebarPil, tinggiPil, tinggiPil, tinggiPil)); // sudut penuh = kapsul
+            g2.setColor(teksPil);
+            g2.drawString(label, x + 12, y + (tinggiPil - fm.getHeight()) / 2 + fm.getAscent());
+            g2.dispose();
         }
     }
 
