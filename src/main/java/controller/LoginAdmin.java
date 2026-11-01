@@ -3,6 +3,8 @@ package controller;
 import dao.Database;
 import dao.UserDao;
 import java.sql.SQLException;
+import java.awt.Color;
+import javax.swing.Timer;
 import javax.swing.JOptionPane;
 
 public class LoginAdmin extends javax.swing.JFrame {
@@ -10,13 +12,14 @@ public class LoginAdmin extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginAdmin.class.getName());
     public LoginAdmin() {
         initComponents();
-        jToggleButton1.addActionListener(evt -> login());
+        jToggleButton1.addActionListener(evt -> login());;
         try {
             Database.initialize();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal membuka database: " + e.getMessage());
         }
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -27,13 +30,13 @@ public class LoginAdmin extends javax.swing.JFrame {
         input_username = new javax.swing.JTextField();
         jToggleButton1 = new javax.swing.JToggleButton();
         input_Password = new javax.swing.JPasswordField();
-        jPanel2 = new javax.swing.JPanel();
         tampilkan_password = new javax.swing.JCheckBox();
+        javax.swing.JLabel gambar_login = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel1.setText("LOGIN  ");
+        jLabel1.setText("LOGIN ADMIN");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Username:");
@@ -47,21 +50,16 @@ public class LoginAdmin extends javax.swing.JFrame {
 
         input_Password.addActionListener(this::input_PasswordActionPerformed);
 
-        jPanel2.setBackground(new java.awt.Color(204, 0, 102));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 342, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
         tampilkan_password.setText("Tampilkan");
         tampilkan_password.addActionListener(this::tampilkan_passwordActionPerformed);
+
+        gambar_login.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/loggo.jpg"))); // NOI18N
+        Image gambar = icon.getImage().getScaledInstance(
+            300, 400, Image.SCALE_SMOOTH
+        );
+
+        gambar_login.setIcon(new ImageIcon(gambar));
+        gambar_login.setAlignmentY(0.0F);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -69,36 +67,28 @@ public class LoginAdmin extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(gambar_login, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(input_Password, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel3)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(input_username, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
-                                    .addComponent(jLabel2)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(131, 131, 131)))
-                        .addGap(20, 20, 20))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(tampilkan_password, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(input_Password, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(input_username, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                                .addComponent(jLabel2)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addGap(131, 131, 131)))
+                    .addComponent(tampilkan_password, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(32, 32, 32))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(49, 49, 49)
+                .addContainerGap(42, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(29, 29, 29)
                 .addComponent(jLabel2)
@@ -112,14 +102,19 @@ public class LoginAdmin extends javax.swing.JFrame {
                 .addComponent(tampilkan_password)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addGap(41, 41, 41))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(gambar_login, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void tampilkan_passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tampilkan_passwordActionPerformed
-        // TODO add your handling code here:
+        
+       /*sebuh logic untuk mengecek apakah check box tuh di tekan dan tercentang atau tidak, kalau
+        kecentang maka rubah pw yang di masukkan jadi angka asli, kalau tidak jadikan .....*/ 
         if(tampilkan_password.isSelected()){
             input_Password.setEchoChar((char)0);
         }else{
@@ -135,7 +130,7 @@ public class LoginAdmin extends javax.swing.JFrame {
         input_Password.requestFocus();
     }//GEN-LAST:event_input_usernameActionPerformed
 
-    //buat method untuk mengecek apakah user untuk login ke aplikasi
+    //buat method untuk mengecek apakah user berhasil untuk login ke aplikasi
     private void login() {
         try {
             boolean berhasil = new UserDao().login(
@@ -173,7 +168,6 @@ public class LoginAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JCheckBox tampilkan_password;
     // End of variables declaration//GEN-END:variables

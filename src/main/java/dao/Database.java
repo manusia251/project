@@ -9,8 +9,9 @@ import java.nio.file.Path;
 import java.io.IOException;
 
 public class Database {
-
+    //ini untuk menentukan lokasi dari data basenya nanti
     private static final Path DB_PATH =
+            
             Path.of("data", "spp.db").toAbsolutePath();
 
     private static final String URL =
@@ -18,9 +19,10 @@ public class Database {
 
     // Membuat koneksi ke database
     public static Connection getConnection() throws SQLException {
-
+        // coba buat file database
         try {
             Files.createDirectories(DB_PATH.getParent());
+            // kalau gagal keluarkan ini
         } catch (IOException e) {
             throw new SQLException("Gagal membuat folder database", e);
         }
