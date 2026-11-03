@@ -1,0 +1,26 @@
+.workspace-content { -fx-background-color: #f2f5f3; }
+.sidebar { -fx-background-color: #173d2a; }
+.brand { -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-line-spacing: 4px; }
+.sidebar > .label { -fx-text-fill: #b6cabb; -fx-font-size: 11px; -fx-font-weight: bold; }
+.nav-button, .logout-button { -fx-background-color: transparent; -fx-background-radius: 8px; -fx-text-fill: #e7f0e9; -fx-alignment: center-left; -fx-padding: 12px 14px; -fx-font-size: 14px; -fx-cursor: hand; }
+.nav-button:hover, .nav-selected { -fx-background-color: #2c6442; -fx-text-fill: white; }
+.logout-button { -fx-background-color: #a9cbb7; -fx-text-fill: #173d2a; -fx-font-weight: bold; -fx-alignment: center; }
+.page-title { -fx-text-fill: #173d2a; -fx-font-size: 27px; -fx-font-weight: bold; }
+.page-subtitle { -fx-text-fill: #6c7b72; -fx-font-size: 14px; }
+.metric-card, .surface-card { -fx-background-color: white; -fx-background-radius: 12px; -fx-padding: 20px; -fx-effect: dropshadow(gaussian, rgba(18,45,30,.08), 12, .12, 0, 3); }
+.metric-label { -fx-text-fill: #718078; -fx-font-size: 13px; }
+.metric-value { -fx-text-fill: #173d2a; -fx-font-size: 23px; -fx-font-weight: bold; }
+.section-title { -fx-text-fill: #244b35; -fx-font-size: 17px; -fx-font-weight: bold; }
+.search-field, .text-field, .combo-box { -fx-background-color: white; -fx-background-radius: 7px; -fx-border-color: #d8e1db; -fx-border-radius: 7px; -fx-padding: 9px 11px; }
+.primary-button, .secondary-button, .danger-button { -fx-background-radius: 7px; -fx-padding: 10px 14px; -fx-font-weight: bold; -fx-cursor: hand; }
+.primary-button { -fx-background-color: #23613c; -fx-text-fill: white; }
+.secondary-button { -fx-background-color: #dce9e1; -fx-text-fill: #234d34; }
+.danger-button { -fx-background-color: #f4dfdc; -fx-text-fill: #963e32; }
+.table-view { -fx-background-color: white; -fx-background-radius: 9px; -fx-border-color: #e0e7e2; -fx-border-radius: 9px; }
+.table-view .column-header-background { -fx-background-color: #e9f0eb; }
+.table-view .column-header .label { -fx-text-fill: #2e5140; -fx-font-weight: bold; -fx-padding: 11px 6px; }
+.table-row-cell { -fx-cell-size: 38px; }
+.table-row-cell:odd { -fx-background-color: #f8faf8; }
+.error-message { -fx-text-fill: #a33b32; }
+.chart { -fx-background-color: white; -fx-background-radius: 12px; -fx-padding: 16px; }
+.default-color0.chart-bar { -fx-bar-fill: #46845c; }

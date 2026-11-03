@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane styleClass="login-root" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+    <ImageView fitHeight="530.0" fitWidth="870.0" mouseTransparent="true" preserveRatio="false">
+        <image><Image url="@../gambar/forest.jpg" /></image>
+    </ImageView>
+    <VBox alignment="CENTER_LEFT" maxWidth="390.0" opacity="0.59" prefHeight="349.0" prefWidth="390.0" spacing="10.0" styleClass="login-card">
+        <padding><Insets bottom="30.0" left="38.0" right="38.0" top="32.0" /></padding>
+        <Label prefHeight="7.0" prefWidth="127.0" styleClass="login-title" text="Sistem Pembayaran SPP" />
+      <Label prefHeight="18.0" prefWidth="241.0" text="masukkan username dan password anda">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+        <Label styleClass="field-label" text="Username" />
+        <TextField fx:id="usernameField" promptText="Masukkan username" styleClass="login-input" />
+        <Label styleClass="field-label" text="Password" />
+        <StackPane>
+            <PasswordField fx:id="passwordField" opacity="0.83" promptText="Masukkan password" styleClass="login-input" />
+            <TextField fx:id="visiblePasswordField" managed="false" promptText="Masukkan password" styleClass="login-input" visible="false" />
+        </StackPane>
+        <CheckBox fx:id="showPassword" styleClass="show-password" text="Tampilkan password" />
+        <Label fx:id="messageLabel" minHeight="18.0" styleClass="login-message" />
+        <Button defaultButton="true" maxWidth="Infinity" onAction="#login" styleClass="login-button" text="MASUK" />
+    </VBox>
+</StackPane>

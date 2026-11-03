@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/27" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HistoryController" spacing="18.0" maxWidth="Infinity" maxHeight="Infinity" styleClass="workspace-content">
+ <padding><Insets top="30" right="34" bottom="30" left="34"/></padding>
+ <VBox spacing="4"><Label text="Riwayat Pembayaran" styleClass="page-title"/><Label text="Daftar pembayaran yang sudah diterima" styleClass="page-subtitle"/></VBox>
+ <HBox spacing="10"><TextField fx:id="yearField" text="2026/2027" prefWidth="130"/><TextField fx:id="searchField" promptText="Cari siswa, NIS, atau bulan" styleClass="search-field" HBox.hgrow="ALWAYS"/><Button text="Lihat Kwitansi" onAction="#receipt" styleClass="secondary-button"/><Button text="Batalkan Pembayaran" onAction="#cancel" styleClass="danger-button"/><Button text="Hapus Catatan" onAction="#delete" styleClass="secondary-button"/></HBox>
+ <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/27" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StudentsController" spacing="18.0" maxWidth="Infinity" maxHeight="Infinity" styleClass="workspace-content">
+ <padding><Insets top="30" right="34" bottom="30" left="34"/></padding>
+ <VBox spacing="4"><Label text="Data Siswa" styleClass="page-title"/><Label text="Kelola siswa dan tagihan tahun ajaran" styleClass="page-subtitle"/></VBox>
+ <HBox spacing="10"><TextField fx:id="searchField" promptText="Cari nama, NIS, atau kelas" styleClass="search-field" HBox.hgrow="ALWAYS"/><TextField fx:id="yearField" text="2026/2027" prefWidth="130"/><Button text="+ Tambah Siswa" onAction="#add" styleClass="primary-button"/><Button text="Ubah" onAction="#edit" styleClass="secondary-button"/><Button text="Hapus" onAction="#delete" styleClass="danger-button"/></HBox>
+ <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

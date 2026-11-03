@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/27" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ReportsController" spacing="18.0" maxWidth="Infinity" maxHeight="Infinity" styleClass="workspace-content">
+ <padding><Insets top="30" right="34" bottom="30" left="34"/></padding>
+ <VBox spacing="4"><Label text="Laporan" styleClass="page-title"/><Label text="Ringkasan pembayaran per bulan dan tahun ajaran" styleClass="page-subtitle"/></VBox>
+ <HBox spacing="10"><Label text="Tahun ajaran"/><TextField fx:id="yearField" text="2026/2027" prefWidth="150"/></HBox>
+ <TableView fx:id="table" prefHeight="220"/>
+ <BarChart fx:id="chart" title="Pembayaran per Bulan" VBox.vgrow="ALWAYS"><xAxis><CategoryAxis/></xAxis><yAxis><NumberAxis/></yAxis></BarChart>
+</VBox>

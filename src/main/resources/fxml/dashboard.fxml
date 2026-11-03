@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/27" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.DashboardController" spacing="18.0" maxWidth="Infinity" maxHeight="Infinity" styleClass="workspace-content">
+    <padding><Insets top="30.0" right="34.0" bottom="30.0" left="34.0"/></padding>
+    <VBox spacing="4.0">
+        <Label text="Dashboard" styleClass="page-title"/>
+        <Label text="Ringkasan pembayaran sekolah" styleClass="page-subtitle"/>
+    </VBox>
+    <HBox fx:id="metricsRow" spacing="14.0"/>
+    <VBox spacing="12.0" styleClass="surface-card" VBox.vgrow="ALWAYS">
+        <Label text="Pembayaran terbaru" styleClass="section-title"/>
+        <TableView fx:id="paymentsTable" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</VBox>
